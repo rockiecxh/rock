@@ -1,4 +1,4 @@
-# Rock live2d typecho plugin
+# Rock Live2D typecho plugin
 
 ## 特性 Feature
 在网页中添加Live2D看板娘。与PJAX兼容，支持无刷新加载。  
@@ -18,3 +18,4 @@ http://www.gnu.org/licenses/gpl-3.0.html
 ## 更新 Update
 2018年10月31日，由fghrsh提供的原API停用，请更新至新地址。参考文章：  
 https://www.fghrsh.net/post/170.html
+
