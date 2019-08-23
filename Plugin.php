@@ -45,15 +45,20 @@ class Rock_Plugin implements Typecho_Plugin_Interface
 
         // 选择外链模型API
         $custom_live2d_api = new Typecho_Widget_Helper_Form_Element_Text('custom_live2d_api', NULL, NULL, _t('选择外链模型API'), _t('在这里填入一个live2d模型API的地址，可供使用外链模型，不填则使用默认API'));
-        $form -> addInput($custom_live2d_api);
+        $form->addInput($custom_live2d_api);
 
         // 自定义宽高
         $custom_width = new Typecho_Widget_Helper_Form_Element_Text('custom_width', NULL, NULL, _t('自定义宽度'), _t('在这里填入自定义宽度，部分模型需要修改'));
-        $form -> addInput($custom_width);
+        $form->addInput($custom_width);
 
         $custom_height = new Typecho_Widget_Helper_Form_Element_Text('custom_height', NULL, NULL, _t('自定义高度'), _t('在这里填入自定义高度，部分模型需要修改'));
-        $form -> addInput($custom_height);
+        $form->addInput($custom_height);
 
+        $exclude_jquery = new Typecho_Widget_Helper_Form_Element_Checkbox('exclude_jquery', array('exclude_jquery' => '禁止加载jQuery'), false, _t('Jquery设置'), _t('插件需要加载jQuery，如果主题模板已经引用加载JQuery，则可以勾选。'));
+        $form->addInput($exclude_jquery);
+
+        $enable_cdn = new Typecho_Widget_Helper_Form_Element_Checkbox('enable_cdn', array('enable_cdn' => '启用CDN加载部分js库'), false, _t('CDN开启'), _t('插件需要通过CDN加载部分js库，默认从本地文件读取如jQuery等文件。'));
+        $form->addInput($enable_cdn);
     }
 
     /**
@@ -77,11 +82,19 @@ class Rock_Plugin implements Typecho_Plugin_Interface
      */
     public static function header() {
         if(!self::isMobile()) {
-            $Path = Helper::options()->pluginUrl . '/Rock/';
+            $plugin_path = Helper::options()->pluginUrl . '/Rock/';
+            $options = Helper::options()->plugin('Rock');
             // echo '<link rel="stylesheet" type="text/css" href="' . $Path . 'css/szRock.css" />';
-            echo '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">';
-            echo '<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>';
-            echo '<script type="text/javascript" src="' . $Path . 'autoload.js"></script>';
+            if ($options->enable_cdn) {
+                echo '<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css" />';
+            } else {
+                echo '<link rel="stylesheet" type="text/css" href="' . $plugin_path . 'css/font-awesome.min.css" />';
+            }
+            echo '<link rel="stylesheet" type="text/css" href="' . $plugin_path . 'css/waifu.css" />';
+            if (!$options->exclude_jquery) {
+                echo '<script type="text/javascript" src="' . $plugin_path . 'js/jquery.min.js"></script>';
+//                echo '<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>';
+            }
         }
     }
 
@@ -101,10 +114,34 @@ class Rock_Plugin implements Typecho_Plugin_Interface
         $custom_live2d_api = Typecho_Widget::widget('Widget_Options') -> Plugin('Rock') -> custom_live2d_api;
         $live2d_api = $custom_live2d_api == null ? "https://live2d.fghrsh.net/api" : $custom_live2d_api;
         if(!self::isMobile()) {
+            $plugin_path = Helper::options()->pluginUrl . '/Rock/';
+            echo '<script type="text/javascript" src="' . $plugin_path . 'js/live2d.min.js"></script>';
+            echo '<script type="text/javascript" src="' . $plugin_path . 'js/waifu-tips.js"></script>';
             echo '<script>$(window).on("load", function() {
             console.log( "' . $live2d_api . ' ")
-            initWidget(live2d_path + "waifu-tips.json", "' . $live2d_api . '", ' . $width . ',' . $height .');
-        })</script>';
+            initWidget("' . $plugin_path .'waifu-tips.json", "' . $live2d_api . '", ' . $width . ',' . $height .');
+        });
+        console.log(`
+        く__,.ヘヽ.        /  ,ー､ 〉
+               ＼ \', !-─‐-i  /  /´
+               ／｀ｰ\'       L/／｀ヽ､
+             /   ／,   /|   ,   ,       \',
+           ｲ   / /-‐/  ｉ  L_ ﾊ ヽ!   i
+            ﾚ ﾍ 7ｲ｀ﾄ   ﾚ\'ｧ-ﾄ､!ハ|   |
+              !,/7 \'0\'     ´0iソ|    |
+              |.从"    _     ,,,, / |./    |
+              ﾚ\'| i＞.､,,__  _,.イ /   .i   |
+                ﾚ\'| | / k_７_/ﾚ\'ヽ,  ﾊ.  |
+                  | |/i 〈|/   i  ,.ﾍ |  i  |
+                 .|/ /  ｉ：    ﾍ!    ＼  |
+                  kヽ>､ﾊ    _,.ﾍ､    /､!
+                  !\'〈//｀Ｔ´\', ＼ ｀\'7\'ｰr\'
+                  ﾚ\'ヽL__|___i,___,ンﾚ|ノ
+                      ﾄ-,/  |___./
+                      \'ｰ\'    !_,.:
+        `);
+
+        </script>';
         }
     }
 
