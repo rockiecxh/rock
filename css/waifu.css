@@ -14,11 +14,16 @@
 #waifu {
 	position: fixed;
 	bottom: -1000px;
-	left: 0;
 	z-index: 1;
 	line-height: 0;
 	transition: transform .3s ease-in-out;
 	transform: translateY(3px);
+}
+#waifu.left{
+	left: 0;
+}
+#waifu.right{
+	right: 0;
 }
 #waifu:hover {
 	transform: translateY(0);
@@ -61,11 +66,16 @@
 }
 #waifu-tool {
 	color: #aaa;
-	top: 70px;
-	right: -10px;
+	top: 30px;
 	position: absolute;
 	opacity: 0;
 	transition: opacity 1s;
+}
+#waifu-tool.left{
+	right: -10px;
+}
+#waifu-tool.right{
+	 left: +10px;
 }
 #waifu:hover #waifu-tool {
 	opacity: 1;

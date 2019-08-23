@@ -1,6 +1,6 @@
 <?php
 /**
- * 魔改看板娘
+ * typecho 博客的魔改看板娘插件
  *
  * @package Rock
  * @author Rockie
@@ -20,6 +20,8 @@ class Rock_Plugin implements Typecho_Plugin_Interface
     public static function activate() {
         Typecho_Plugin::factory('Widget_Archive')->header = array('Rock_Plugin', 'header');
         Typecho_Plugin::factory('Widget_Archive')->footer = array('Rock_Plugin', 'footer');
+
+        return "插件启动成功";
     }
 
     /**
@@ -31,7 +33,7 @@ class Rock_Plugin implements Typecho_Plugin_Interface
      * @throws Typecho_Plugin_Exception
      */
     public static function deactivate() {
-
+        return "插件禁用成功";
     }
 
     /**
@@ -46,6 +48,15 @@ class Rock_Plugin implements Typecho_Plugin_Interface
         // 选择外链模型API
         $custom_live2d_api = new Typecho_Widget_Helper_Form_Element_Text('custom_live2d_api', NULL, NULL, _t('选择外链模型API'), _t('在这里填入一个live2d模型API的地址，可供使用外链模型，不填则使用默认API'));
         $form->addInput($custom_live2d_api);
+
+        // 自定义定位
+        $position = new Typecho_Widget_Helper_Form_Element_Radio('position',
+            array(
+                'left' => _t('靠左'),
+                'right' => _t('靠右'),
+            ),
+            'left', _t('自定义位置'), _t('自定义看板娘所在的位置'));
+        $form -> addInput($position);
 
         // 自定义宽高
         $custom_width = new Typecho_Widget_Helper_Form_Element_Text('custom_width', NULL, NULL, _t('自定义宽度'), _t('在这里填入自定义宽度，部分模型需要修改'));
@@ -107,19 +118,20 @@ class Rock_Plugin implements Typecho_Plugin_Interface
      * @return unknown
      */
     public static function footer() {
-        $width  = Typecho_Widget::widget('Widget_Options') -> Plugin('Rock') -> custom_width;
-        $height = Typecho_Widget::widget('Widget_Options') -> Plugin('Rock') -> custom_height;
-        $width = ($width == null || $width == 0) ? 300 : $width;
-        $height = ($height == null || $height == 0) ? 300 : $height;
-        $custom_live2d_api = Typecho_Widget::widget('Widget_Options') -> Plugin('Rock') -> custom_live2d_api;
-        $live2d_api = $custom_live2d_api == null ? "https://live2d.fghrsh.net/api" : $custom_live2d_api;
         if(!self::isMobile()) {
+            $options = Helper::options()->plugin('Rock');
+            $width = $options->custom_width ? $options->custom_width : 300;
+            $height = $options->custom_height ? $options->custom_height : 300;
+            $position = $options->position ? $options->position : 'left';
+            $custom_live2d_api = $options->custom_live2d_api;
+            $live2d_api = !$custom_live2d_api ? "https://live2d.fghrsh.net/api" : $custom_live2d_api;
+//            console.log( "' . $live2d_api . ' ");
+
             $plugin_path = Helper::options()->pluginUrl . '/Rock/';
             echo '<script type="text/javascript" src="' . $plugin_path . 'js/live2d.min.js"></script>';
             echo '<script type="text/javascript" src="' . $plugin_path . 'js/waifu-tips.js"></script>';
             echo '<script>$(window).on("load", function() {
-            console.log( "' . $live2d_api . ' ")
-            initWidget("' . $plugin_path .'waifu-tips.json", "' . $live2d_api . '", ' . $width . ',' . $height .');
+            initWidget("' . $plugin_path . 'waifu-tips.json", "' . $live2d_api . '","' . $position . '",' . $width . ',' . $height . ');
         });
         console.log(`
         く__,.ヘヽ.        /  ,ー､ 〉
