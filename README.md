@@ -6,6 +6,8 @@
 * 支持自定义Live2D API, 可以使用[fghrsh/live2d_api](https://github.com/fghrsh/live2d_api)自己搭建API。
 * 支持自定义看板娘位置，左侧或者右侧
 * 支持调整看板娘宽度和高度，因为有的模型比较高，所以需要调整高度
+* 集成了Zero的小喵[GoTop插件](https://github.com/MisakaTAT/GoTop)
+* 支持看板娘和GoTop开启
 
 ## 更多 More
 Live2D官方网站：  
