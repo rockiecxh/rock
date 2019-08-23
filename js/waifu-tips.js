@@ -10,19 +10,35 @@ function loadWidget(waifuPath, apiPath, position, width, height) {
 			<div id="waifu-tips"></div>
 			<canvas id="live2d" width="` + width + `" height="` + height +`"></canvas>
 			<div id="waifu-tool" class="` + position +`">
+<!--				<span class="fa fa-lg fa-home"></span>-->
+				<span class="fa fa-lg fa-cog"></span>
+				<span class="fa fa-lg fa-pencil"></span>
 				<span class="fa fa-lg fa-comment"></span>
 				<span class="fa fa-lg fa-paper-plane"></span>
 				<span class="fa fa-lg fa-user-circle"></span>
 				<span class="fa fa-lg fa-street-view"></span>
 				<span class="fa fa-lg fa-camera-retro"></span>
-				<span class="fa fa-lg fa-info-circle"></span>
-				<span class="fa fa-lg fa-plus-circle"></span>
+<!--				<span class="fa fa-lg fa-info-circle"></span>-->
 				<span class="fa fa-lg fa-times"></span>
 			</div>
 		</div>`);
 	$("#waifu").show().animate({ bottom: 0 }, 3000);
 
 	function registerEventListener() {
+		var current = {
+			root: document.location.protocol + '//' + document.location.hostname + (window.location.port ? ':' + window.location.port : '') + '/',
+			admin: document.location.protocol + '//' + document.location.hostname + (window.location.port ? ':' + window.location.port : '') + '/admin/index.php',
+			write: document.location.protocol + '//' + document.location.hostname + (window.location.port ? ':' + window.location.port : '') + '/admin/write-post.php'
+		};
+		$("#waifu-tool .fa-home").click(() => {
+			location.href = current.root;
+		});
+		$("#waifu-tool .fa-cog").click(() => {
+			location.href = current.admin;
+		});
+		$("#waifu-tool .fa-pencil").click(() => {
+			location.href = current.write;
+		});
 		$("#waifu-tool .fa-comment").click(showHitokoto);
 		$("#waifu-tool .fa-paper-plane").click(() => {
 			if (window.Asteroids) {
@@ -44,9 +60,6 @@ function loadWidget(waifuPath, apiPath, position, width, height) {
 			Live2D.captureFrame = true;
 		});
 		$("#waifu-tool .fa-info-circle").click(() => {
-			open("https://github.com/rockiecxh/rock");
-		});
-		$("#waifu-tool .fa-plus-circle").click(() => {
 			open("https://github.com/rockiecxh/rock");
 		});
 		$("#waifu-tool .fa-times").click(() => {
