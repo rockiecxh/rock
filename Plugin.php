@@ -54,6 +54,19 @@ class Rock_Plugin implements Typecho_Plugin_Interface
             '1', _t('是否开启看板娘'), _t('是否开启看板娘，默认开启。'));
         $form->addInput($board_girl);
 
+        // 读取模型文件夹
+        $models = array();
+        $load = glob("../usr/plugins/Rock/model/*", GLOB_ONLYDIR);
+
+        foreach($load as $key => $value){
+            $single = substr($value, 26);
+            $models[$single] = ucfirst($single);
+        };
+
+        // 选择模型
+        $choose_models = new Typecho_Widget_Helper_Form_Element_Checkbox('choose_models', $models, 'kesyoban', _t('选择模型'), _t('选择插件 Models 目录下的模型，每个模型为一个文件夹，并确定配置文件名为 <a>model.json</a>'));
+        $form -> addInput($choose_models);
+
         // 选择外链模型API
         $custom_live2d_api = new Typecho_Widget_Helper_Form_Element_Text('custom_live2d_api', NULL, NULL, _t('选择外链模型API'), _t('在这里填入一个live2d模型API的地址，可供使用外链模型，不填则使用默认API'));
         $form->addInput($custom_live2d_api);
@@ -162,8 +175,26 @@ class Rock_Plugin implements Typecho_Plugin_Interface
                     "width" => $options->custom_width ? $options->custom_width : 300,
                     "height" => $options->custom_height ? $options->custom_height : 300,
                     "position" => $options->position ? $options->position : 'left',
-                    "apiPath" => !$options->custom_live2d_api ? "https://live2d.fghrsh.net/api" : $options->custom_live2d_api
+                    "apiPath" => !$options->custom_live2d_api ? "https://live2d.fghrsh.net/api" : $options->custom_live2d_api,
+                    "useCustomModel" => $options->custom_live2d_api ? true : false
                 );
+
+                if($options -> choose_models){
+                    $model = $options -> choose_models;
+
+                    if(is_array($model)){
+                        foreach($model as &$item){
+                            $item = Helper::options() -> pluginUrl . "/Rock/model/" . $item . "/model.json";
+                        }
+                    }
+                    else{
+                        $model = array(Helper::options() -> pluginUrl . "/Rock/model/" . $model . "/model.json");
+                    }
+                }
+                else{
+                    $model = array(Helper::options() -> pluginUrl . "/Rock/model/kesyoban/model.json");
+                }
+                $config["model"] = $model;
                 // load live2d scripts
                 echo '<script type="text/javascript" src="' . $plugin_path . 'js/live2d.min.js"></script>';
                 echo '<script type="text/javascript" src="' . $plugin_path . 'js/waifu-tips.js"></script>';

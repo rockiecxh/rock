@@ -3,6 +3,36 @@
  * https://www.fghrsh.net/post/123.html
  */
 
+function loadTipsJson(waifuPath, showMessage, messageArray) {
+  $.getJSON(waifuPath, function (result) {
+    $.each(result.mouseover, function (index, tips) {
+      $(document).on("mouseover", tips.selector, function () {
+        let text = Array.isArray(tips.text) ? tips.text[Math.floor(Math.random() * tips.text.length)] : tips.text;
+        text = text.replace("{text}", $(this).text());
+        showMessage(text, 4000, 8);
+      });
+    });
+    $.each(result.click, function (index, tips) {
+      $(document).on("click", tips.selector, function () {
+        let text = Array.isArray(tips.text) ? tips.text[Math.floor(Math.random() * tips.text.length)] : tips.text;
+        text = text.replace("{text}", $(this).text());
+        showMessage(text, 4000, 8);
+      });
+    });
+    $.each(result.seasons, function (index, tips) {
+      const now = new Date(),
+        after = tips.date.split("-")[0],
+        before = tips.date.split("-")[1] || after;
+      if ((after.split("/")[0] <= now.getMonth() + 1 && now.getMonth() + 1 <= before.split("/")[0]) && (after.split("/")[1] <= now.getDate() && now.getDate() <= before.split("/")[1])) {
+        let text = Array.isArray(tips.text) ? tips.text[Math.floor(Math.random() * tips.text.length)] : tips.text;
+        text = text.replace("{year}", now.getFullYear());
+        //showMessage(text, 7000, true);
+        messageArray.push(text);
+      }
+    });
+  });
+}
+
 function loadWidget(config) {
 	const waifuPath = config.waifuPath;
 	const apiPath = config.apiPath;
@@ -177,42 +207,27 @@ function loadWidget(config) {
 			modelTexturesId = 53; //材质 ID
 		}
 		loadModel(modelId, modelTexturesId);
-		$.getJSON(waifuPath, function(result) {
-			$.each(result.mouseover, function(index, tips) {
-				$(document).on("mouseover", tips.selector, function() {
-					let text = Array.isArray(tips.text) ? tips.text[Math.floor(Math.random() * tips.text.length)] : tips.text;
-					text = text.replace("{text}", $(this).text());
-					showMessage(text, 4000, 8);
-				});
-			});
-			$.each(result.click, function(index, tips) {
-				$(document).on("click", tips.selector, function() {
-					let text = Array.isArray(tips.text) ? tips.text[Math.floor(Math.random() * tips.text.length)] : tips.text;
-					text = text.replace("{text}", $(this).text());
-					showMessage(text, 4000, 8);
-				});
-			});
-			$.each(result.seasons, function(index, tips) {
-				const now = new Date(),
-					after = tips.date.split("-")[0],
-					before = tips.date.split("-")[1] || after;
-				if ((after.split("/")[0] <= now.getMonth() + 1 && now.getMonth() + 1 <= before.split("/")[0]) && (after.split("/")[1] <= now.getDate() && now.getDate() <= before.split("/")[1])) {
-					let text = Array.isArray(tips.text) ? tips.text[Math.floor(Math.random() * tips.text.length)] : tips.text;
-					text = text.replace("{year}", now.getFullYear());
-					//showMessage(text, 7000, true);
-					messageArray.push(text);
-				}
-			});
-		});
+		loadTipsJson(waifuPath, showMessage, messageArray);
 	}
-	initModel();
 
-	function loadModel(modelId, modelTexturesId) {
-		localStorage.setItem("modelId", modelId);
-		if (modelTexturesId === undefined) modelTexturesId = 0;
-		localStorage.setItem("modelTexturesId", modelTexturesId);
-		loadlive2d("live2d", `${apiPath}/get/?id=${modelId}-${modelTexturesId}`, console.log(`Live2D 模型 ${modelId}-${modelTexturesId} 加载完成`));
-	}
+	if (config.useCustomModel) {
+    initModel();
+  } else {
+	  loadLocalModel();
+  }
+
+  function loadModel(modelId, modelTexturesId) {
+    localStorage.setItem("modelId", modelId);
+    if (modelTexturesId === undefined) modelTexturesId = 0;
+    localStorage.setItem("modelTexturesId", modelTexturesId);
+    loadlive2d("live2d", `${apiPath}/get/?id=${modelId}-${modelTexturesId}`, console.log(`Live2D 模型 ${modelId}-${modelTexturesId} 加载完成`));
+  }
+
+  function loadLocalModel() {
+    loadlive2d("live2d", config.model[0], console.log(`Live2D 模型 加载完成`));
+    loadTipsJson(waifuPath, showMessage, messageArray);
+
+  }
 
 	function loadRandModel() {
 		const modelId = localStorage.getItem("modelId"),
