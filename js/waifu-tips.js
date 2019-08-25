@@ -3,7 +3,13 @@
  * https://www.fghrsh.net/post/123.html
  */
 
-function loadWidget(waifuPath, apiPath, position, width, height) {
+function loadWidget(config) {
+	const waifuPath = config.waifuPath;
+	const apiPath = config.apiPath;
+	const position = config.position;
+	const width = config.width;
+	const height = config.height;
+
 	localStorage.removeItem("waifu-display");
 	sessionStorage.removeItem("waifu-text");
 	$("body").append(`<div id="waifu" class="` + position +`">
@@ -238,10 +244,8 @@ function loadWidget(waifuPath, apiPath, position, width, height) {
 	}
 }
 
-function initWidget(waifuPath = "/waifu-tips.json", apiPath = "", position, custom_width, custom_height) {
-	console.log('position: ' + position + ', width: ' + custom_width + ', height: ' + custom_height);
-	const width = (custom_width === undefined || custom_width === 0) ? 300 : custom_width;
-	const height = (custom_height === undefined || custom_height === 0) ? 300 : custom_height;
+function initWidget(config) {
+	console.log('position: ' + config.position + ', width: ' + config.width + ', height: ' + config.height);
 
 	if (screen.width <= 768) return;
 	$("body").append(`<div id="waifu-toggle" style="margin-left: -100px;">
@@ -256,7 +260,7 @@ function initWidget(waifuPath = "/waifu-tips.json", apiPath = "", position, cust
 			$("#waifu-toggle").hide();
 		});
 		if ($("#waifu-toggle").attr("first-time")) {
-			loadWidget(waifuPath, apiPath);
+			loadWidget(config);
 			$("#waifu-toggle").attr("first-time", false);
 		} else {
 			localStorage.removeItem("waifu-display");
@@ -266,6 +270,6 @@ function initWidget(waifuPath = "/waifu-tips.json", apiPath = "", position, cust
 	if (localStorage.getItem("waifu-display") && new Date().getTime() - localStorage.getItem("waifu-display") <= 86400000) {
 		$("#waifu-toggle").attr("first-time", true).css({ "margin-left": -50 });
 	} else {
-		loadWidget(waifuPath, apiPath, position, width, height);
+		loadWidget(config);
 	}
 }

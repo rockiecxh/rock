@@ -156,19 +156,20 @@ class Rock_Plugin implements Typecho_Plugin_Interface
             }
 
             if ($options->board_girl) {
-
                 // Live2D configuration
-                $width = $options->custom_width ? $options->custom_width : 300;
-                $height = $options->custom_height ? $options->custom_height : 300;
-                $position = $options->position ? $options->position : 'left';
-                $custom_live2d_api = $options->custom_live2d_api;
-                $live2d_api = !$custom_live2d_api ? "https://live2d.fghrsh.net/api" : $custom_live2d_api;
+                $config = array(
+                    "waifuPath" => $plugin_path . 'waifu-tips.json',
+                    "width" => $options->custom_width ? $options->custom_width : 300,
+                    "height" => $options->custom_height ? $options->custom_height : 300,
+                    "position" => $options->position ? $options->position : 'left',
+                    "apiPath" => !$options->custom_live2d_api ? "https://live2d.fghrsh.net/api" : $options->custom_live2d_api
+                );
                 // load live2d scripts
                 echo '<script type="text/javascript" src="' . $plugin_path . 'js/live2d.min.js"></script>';
                 echo '<script type="text/javascript" src="' . $plugin_path . 'js/waifu-tips.js"></script>';
                 // 加载完后启动live2d
                 echo '<script>$(window).on("load", function() {
-                    initWidget("' . $plugin_path . 'waifu-tips.json", "' . $live2d_api . '","' . $position . '",' . $width . ',' . $height . ');
+                    initWidget(' . json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . ');
                 });
                 console.log(`
 く__,.ヘヽ.        /  ,ー､ 〉
