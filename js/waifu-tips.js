@@ -69,7 +69,7 @@ function loadWidget(config) {
 			open("https://github.com/rockiecxh/rock");
 		});
 		$("#waifu-tool .fa-times").click(() => {
-			localStorage.setItem("waifu-display", new Date().getTime());
+			localStorage.setItem("waifu-display", Date.now());
 			showMessage("愿你有一天能与重要的人重逢。", 2000, 11);
 			$("#waifu").animate({ bottom: -500 }, 3000, () => {
 				$("#waifu").hide();
@@ -92,7 +92,7 @@ function loadWidget(config) {
 	registerEventListener();
 
 	function welcomeMessage() {
-		let SiteIndexUrl = location.port ? `${location.protocol}//${location.hostname}:${location.port}/` : `${location.protocol}//${location.hostname}/`, text; //自动获取主页
+		let SiteIndexUrl = `${location.protocol}//${location.host}/`, text; //自动获取主页
 		if (location.href === SiteIndexUrl) { //如果是主页
 			const now = new Date().getHours();
 			if (now > 5 && now <= 7) text = "早上好！一日之计在于晨，美好的一天就要开始了。";
@@ -122,8 +122,8 @@ function loadWidget(config) {
 	var userAction = false,
 		hitokotoTimer = null,
 		messageTimer = null,
-		messageArray = ["好久不见，日子过得好快呢……", "大坏蛋！你都多久没碰人家了呀，嘤嘤嘤～", "嗨～快来逗我玩吧！", "拿小拳拳锤你胸口！"];
-	if ($(".fa-share-alt").is(":hidden")) messageArray.push("记得把小家加入Adblock白名单哦！");
+		messageArray = ["好久不见，日子过得好快呢……", "大坏蛋！你都多久没理人家了呀，嘤嘤嘤～", "嗨～快来逗我玩吧！", "拿小拳拳锤你胸口！"];
+	if ($(".fa-share-alt").is(":hidden")) messageArray.push("记得把小家加入 Adblock 白名单哦！");
 	$(document).mousemove(() => {
 		userAction = true;
 	}).keydown(() => {
@@ -267,7 +267,7 @@ function initWidget(config) {
 			$("#waifu").show().animate({ bottom: 0 }, 3000);
 		}
 	});
-	if (localStorage.getItem("waifu-display") && new Date().getTime() - localStorage.getItem("waifu-display") <= 86400000) {
+	if (localStorage.getItem("waifu-display") && Date.now() - localStorage.getItem("waifu-display") <= 86400000) {
 		$("#waifu-toggle").attr("first-time", true).css({ "margin-left": -50 });
 	} else {
 		loadWidget(config);
